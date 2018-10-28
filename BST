@@ -1,0 +1,208 @@
+package com.data_structure;
+
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Stack;
+
+public class BST<E extends Comparable<E>> {
+    private class Node{
+        private E e;
+        private Node left;
+        private Node right;
+
+        public Node(E e){
+            this.e = e;
+            this.left = null;
+            this.right = null;
+        }
+
+        @Override
+        public String toString(){
+            return e.toString();
+        }
+    }
+
+    private Node root;
+    private int size;
+
+    public BST(){
+        root = null;
+        size = 0;
+    }
+
+    public int size(){
+        return size;
+    }
+
+    public boolean isEmpty(){
+        return size == 0;
+    }
+
+    public void add(E e){
+
+        if (e == null){
+            throw new IllegalArgumentException("不可以添加空元素...");
+        }
+        root = add(root,e);
+    }
+//    在以node为根节点的二分搜索树上添加元素e，并返回添加了新的元素之后的二分搜索树的根
+    private Node add(Node node, E e){
+        if (size == 0){
+            return new Node(e);
+        }
+        if (e.compareTo(node.e) < 0){
+            return add(node.left,e);
+        }else if (e.compareTo(node.e) > 0){
+            return add(node.right,e);
+        }
+        return node;
+    }
+
+    public boolean contains(E e){
+        return contains(root ,e);
+    }
+
+    private boolean contains(Node node,E e){
+
+        if (e == null){
+            return false;
+        }
+        if (e.equals(node.e)){
+            return true;
+        }
+        if (e.compareTo(node.e) < 0){
+            return contains(node.left,e);
+        }else {
+            return contains(node.right, e);
+        }
+    }
+
+//    二分搜索树的层序遍历,非递归的写法
+    public void levelOrder(){
+        Queue<Node> queue = new LinkedList<>();
+        queue.add(root);
+        while(!queue.isEmpty()){
+            Node cur = queue.remove();
+            System.out.println(cur.e);
+            if (cur.left != null){
+                queue.add(cur.left);
+            }
+            if (cur.right != null){
+                queue.add(cur.right);
+            }
+        }
+    }
+
+//    二分搜索树的前序遍历，非递归写法
+    public void preOrderNotRecusion(){
+        Stack<Node> stack = new Stack<>();
+        stack.push(root);
+        while(!stack.isEmpty()){
+            Node cur = stack.pop();
+            System.out.println(cur.e);
+            if (cur.right != null){
+                stack.push(cur.right);
+            }
+            if (cur.left != null){
+                stack.push(cur.left);
+            }
+        }
+    }
+
+//    接下来是二分搜索树的前中后序的递归写法
+    public void preOrder(){
+        preOrder(root);
+    }
+
+    private void preOrder(Node node){
+        if (node == null){
+            return;
+        }
+        System.out.println(node.e);
+        preOrder(node.left);
+        preOrder(node.right);
+    }
+
+    public void inOrder(){
+        inOrder(root);
+    }
+
+    private void inOrder(Node node){
+        if (node == null){
+            return;
+        }
+        inOrder(node.left);
+        System.out.println(node.e);
+        inOrder(node.right);
+    }
+
+    public void postOrder(){
+        postOrder(root);
+    }
+    private void postOrder(Node node){
+        if (node == null){
+            return;
+        }
+        postOrder(node.left);
+        postOrder(node.right);
+        System.out.println(node.e);
+    }
+
+//    返回二搜素树的最小元素
+    public E minium(){
+        if (size == 0){
+            throw new IllegalArgumentException("BST is Empty");
+        }
+        return minimum(root).e;
+    }
+    private Node minimum(Node node){
+        if (node.left == null){
+            return node;
+        }
+        return minimum(node.left);
+    }
+
+//    删除二分搜索树中最小的元素.并返回该元素的值
+    public E removeMin(){
+        Node result = minimum(root);
+        root = removeMin(root);
+        return result.e;
+
+    }
+    private Node removeMin(Node node){
+        if (node.left == null){
+            Node rightNode = node.right;
+            node.right = null;
+            size --;
+            return rightNode;
+        }
+        return removeMin(node.left);
+    }
+
+//    删除二搜索树中的任意一个元素
+    public void remove(E e){
+       root = remove(root,e);
+    }
+    public Node remove(Node node, E e){
+        if (node == null){
+            return null;
+        }else if (node.left == null){
+            Node rightNode = node.right;
+            node.right = null;
+            size --;
+            return rightNode;
+        }else if (node.right == null){
+            Node leftNode = node.left;
+            node.left = null;
+            size --;
+            return leftNode;
+        }else {
+            Node cur = minimum(node.left);
+            node.left = removeMin(node.left);
+            cur.left = node.left;
+            cur.right = node.right;
+            node.right = node.left;
+            return cur;
+        }
+    }
+}
